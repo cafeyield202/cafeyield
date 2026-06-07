@@ -82,8 +82,8 @@ body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--cream);mi
 .tb-out{background:transparent;border:1px solid rgba(200,118,42,.3);border-radius:7px;padding:5px 10px;color:var(--latte);cursor:pointer;font-size:12px;transition:.2s}
 .tb-out:hover{border-color:var(--caramel);color:var(--caramel)}
 .scroll-area{flex:1;overflow-y:auto;padding-bottom:80px}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--dark);border-top:var(--bd);display:flex;align-items:stretch;height:68px;z-index:50;box-shadow:0 -4px 20px rgba(0,0,0,.5)}
-.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;background:transparent;border:none;color:var(--latte);font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;transition:.2s;padding:0;min-height:68px;width:100%;touch-action:manipulation;-webkit-tap-highlight-color:rgba(200,118,42,.15)}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--dark);border-top:var(--bd);display:flex;align-items:stretch;height:72px;z-index:999;box-shadow:0 -4px 20px rgba(0,0,0,.5)}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;background:transparent;border:none;color:var(--latte);font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;transition:.2s;padding:0;height:72px;min-width:0;touch-action:manipulation;position:relative;}
 .bn-item:hover{color:var(--cream);background:rgba(200,118,42,.06)}
 .bn-item.on{color:var(--gold);background:rgba(200,118,42,.1)}
 .bn-item .ico{font-size:22px;line-height:1}
@@ -383,10 +383,10 @@ body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--cream);mi
   </div>
 
   <nav class="bottom-nav">
-    <button class="bn-item on" id="bn-inicio" onclick="goPage('inicio')"><span class="ico">🏠</span><span class="lbl">Inicio</span></button>
-    <button class="bn-item" id="bn-cafe" onclick="goPage('cafe')"><span class="ico">☕</span><span class="lbl">Café</span></button>
-    <button class="bn-item" id="bn-referidos" onclick="goPage('referidos')"><span class="ico">👥</span><span class="lbl">Referidos</span></button>
-    <button class="bn-item" id="bn-banco" onclick="goPage('banco')"><span class="ico">🏦</span><span class="lbl">Banco</span></button>
+    <div class="bn-item on" id="bn-inicio" ontouchstart="goPage('inicio')" onclick="goPage('inicio')"><span class="ico">🏠</span><span class="lbl">Inicio</span></div>
+    <div class="bn-item" id="bn-cafe" ontouchstart="goPage('cafe')" onclick="goPage('cafe')"><span class="ico">☕</span><span class="lbl">Café</span></div>
+    <div class="bn-item" id="bn-referidos" ontouchstart="goPage('referidos')" onclick="goPage('referidos')"><span class="ico">👥</span><span class="lbl">Referidos</span></div>
+    <div class="bn-item" id="bn-banco" ontouchstart="goPage('banco')" onclick="goPage('banco')"><span class="ico">🏦</span><span class="lbl">Banco</span></div>
   </nav>
 </div>
 
