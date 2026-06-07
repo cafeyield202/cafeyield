@@ -524,7 +524,7 @@ async function doLogin(){
   if(!CAP.lCap){toast('⚠️ Completa el captcha');return;}
   load(true);
   try{
-    const email=ph.replace(/\D/g,'')+('@cafeyield.mx');
+    const email=ph.replace(/\D/g,'')+('@gmail.com');
     const {data,error}=await sb.auth.signInWithPassword({email,password:pw});
     if(error)throw error;
     await loadAndEnter(data.user.id);
@@ -569,7 +569,7 @@ async function doRegister(){
     if(ex)throw new Error('Ese teléfono ya está registrado');
 
     // Crear cuenta en Supabase Auth
-    const email=ph.replace(/\D/g,'')+('@cafeyield.mx');
+    const email=ph.replace(/\D/g,'')+('@gmail.com');
     const {data:auth,error:ae}=await sb.auth.signUp({email,password:pw});
     if(ae)throw ae;
 
@@ -876,7 +876,7 @@ async function savePassword(){
   if(nw.length<8){toast('⚠️ Mínimo 8 caracteres');return;}
   if(nw!==conf){toast('⚠️ Las contraseñas no coinciden');return;}
   load(true);
-  const email=CUR.phone.replace(/\D/g,'')+('@cafeyield.mx');
+  const email=CUR.phone.replace(/\D/g,'')+('@gmail.com');
   const {error:se}=await sb.auth.signInWithPassword({email,password:old});
   if(se){load(false);toast('❌ Contraseña actual incorrecta');return;}
   const {error}=await sb.auth.updateUser({password:nw});
