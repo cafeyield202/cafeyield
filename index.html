@@ -13,6 +13,13 @@ const sb = createClient(
   'https://xwhvwoncnvbdtaztrgvl.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3aHZ3b25jbnZiZHRhenRyZ3ZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3OTU0ODMsImV4cCI6MjA5NjM3MTQ4M30.ZN92gm_IBalT3MadPILMwLusUgSdZ6dlGfXc_cRxWsk'
 );
+
+// ══════════════════════════════════════════
+//  CÓDIGO MAESTRO (puerta de entrada)
+//  Cualquier usuario nuevo puede registrarse
+//  con este código aunque no tenga un invitador
+// ══════════════════════════════════════════
+const MASTER_CODE = 'CAFEYIELD';
 </script>
 <style>
 :root{
@@ -51,6 +58,9 @@ body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--cream);mi
 .cap.on::after{content:'✓';color:#fff;font-size:13px;font-weight:700}
 .ref-hint{background:rgba(200,118,42,.09);border:1px solid rgba(200,118,42,.25);border-radius:10px;padding:10px 13px;font-size:12px;color:var(--latte);margin-bottom:13px}
 .ref-hint b{color:var(--gold)}
+/* Nota del código maestro */
+.master-hint{background:rgba(61,107,74,.12);border:1px solid rgba(93,160,110,.3);border-radius:10px;padding:11px 13px;font-size:12px;color:var(--latte);margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.master-hint b{color:var(--glow)}
 .btn{width:100%;padding:13px;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:.25s}
 .btn-gold{background:linear-gradient(135deg,var(--caramel),var(--gold));color:var(--ink)}
 .btn-gold:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(200,118,42,.4)}
@@ -233,14 +243,20 @@ body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--cream);mi
       <button class="btn btn-gold" onclick="doLogin()">Iniciar Sesión</button>
     </div>
     <div id="registerF" class="hide">
+      <!-- Banner: invitado por usuario real -->
       <div id="refBanner" class="ref-hint hide">Invitado por: <b id="refByName">—</b> · Código: <b id="refByCode">—</b></div>
+      <!-- Banner: código maestro -->
+      <div id="masterBanner" class="master-hint hide">☕ <span>Usando código oficial <b>CaféYield</b> — válido para primeros registros</span></div>
       <div class="fi2">
         <div class="fi"><label>Nombre</label><input type="text" id="rName" placeholder="Nombre"></div>
         <div class="fi"><label>Apellido</label><input type="text" id="rLast" placeholder="Apellido"></div>
       </div>
       <div class="fi"><label>Teléfono</label><input type="tel" id="rPhone" placeholder="+52 55 0000 0000"></div>
       <div class="fi"><label>Contraseña</label><input type="password" id="rPass" placeholder="Mínimo 8 caracteres"></div>
-      <div class="fi"><label>Código de Referido <span style="color:#e07060">*obligatorio</span></label><input type="text" id="rRef" placeholder="Código de quien te invitó" oninput="checkRef()"></div>
+      <div class="fi">
+        <label>Código de Referido <span style="color:var(--glow);font-size:10px">· Usa <b>CAFEYIELD</b> si no tienes uno</span></label>
+        <input type="text" id="rRef" placeholder="Código de quien te invitó (ej. CAFEYIELD)" oninput="checkRef()">
+      </div>
       <div class="cap-row"><div class="cap" id="rCap" onclick="toggleCap('rCap')"></div><span style="font-size:13px;color:var(--latte)">No soy un robot</span><span style="margin-left:auto;font-size:20px">🔐</span></div>
       <button class="btn btn-green" onclick="doRegister()">Crear Cuenta</button>
     </div>
@@ -466,14 +482,39 @@ function switchAuth(m){
   document.getElementById('registerF').classList.toggle('hide',m!=='register');
   document.querySelectorAll('.atab').forEach((t,i)=>t.classList.toggle('on',(m==='login'&&i===0)||(m==='register'&&i===1)));
 }
+
+/*
+ * checkRef()
+ * ──────────
+ * 1. Si el código es CAFEYIELD (código maestro) → mostrar banner verde, permitir registro sin invitador real
+ * 2. Si el código coincide con un usuario real → mostrar banner del invitador
+ * 3. Otro valor → ocultar ambos banners
+ */
 async function checkRef(){
   const code=document.getElementById('rRef').value.trim().toUpperCase();
-  if(!code){document.getElementById('refBanner').classList.add('hide');return;}
+  const refBanner=document.getElementById('refBanner');
+  const masterBanner=document.getElementById('masterBanner');
+
+  refBanner.classList.add('hide');
+  masterBanner.classList.add('hide');
+
+  if(!code) return;
+
+  // Código maestro: no busca en BD, siempre válido
+  if(code===MASTER_CODE){
+    masterBanner.classList.remove('hide');
+    return;
+  }
+
+  // Código de usuario real
   const {data}=await sb.from('users').select('name').eq('ref_code',code).maybeSingle();
-  const b=document.getElementById('refBanner');
-  if(data){document.getElementById('refByName').textContent=data.name;document.getElementById('refByCode').textContent=code;b.classList.remove('hide');}
-  else b.classList.add('hide');
+  if(data){
+    document.getElementById('refByName').textContent=data.name;
+    document.getElementById('refByCode').textContent=code;
+    refBanner.classList.remove('hide');
+  }
 }
+
 function toggleCap(id){CAP[id]=!CAP[id];document.getElementById(id).classList.toggle('on',CAP[id]);}
 
 async function doLogin(){
@@ -490,30 +531,64 @@ async function doLogin(){
   }catch(e){load(false);toast('❌ Teléfono o contraseña incorrectos');}
 }
 
+/*
+ * doRegister()
+ * ────────────
+ * Acepta:
+ *  • CAFEYIELD  → código maestro, ref_by = null (sin comisión a nadie)
+ *  • Código de usuario real → ref_by = id del invitador (con comisiones)
+ */
 async function doRegister(){
   const name=document.getElementById('rName').value.trim();
   const last=document.getElementById('rLast').value.trim();
   const ph=document.getElementById('rPhone').value.trim();
   const pw=document.getElementById('rPass').value;
   const ref=document.getElementById('rRef').value.trim().toUpperCase();
+
   if(!name||!last||!ph||!pw){toast('⚠️ Completa todos los campos');return;}
   if(pw.length<8){toast('⚠️ Contraseña mínimo 8 caracteres');return;}
   if(!CAP.rCap){toast('⚠️ Completa el captcha');return;}
-  if(!ref){toast('⚠️ Se requiere un código de invitación');return;}
+  if(!ref){toast('⚠️ Ingresa un código de referido (usa CAFEYIELD si no tienes uno)');return;}
+
   load(true);
   try{
-    const {data:refUser,error:re}=await sb.from('users').select('id,name').eq('ref_code',ref).maybeSingle();
-    if(re||!refUser)throw new Error('Código de referido inválido');
+    let refUserId=null;
+
+    if(ref===MASTER_CODE){
+      // Código maestro → sin invitador, sin comisión
+      refUserId=null;
+    } else {
+      // Buscar usuario real con ese código
+      const {data:refUser,error:re}=await sb.from('users').select('id,name').eq('ref_code',ref).maybeSingle();
+      if(re||!refUser)throw new Error('Código de referido inválido. Usa CAFEYIELD si no tienes uno.');
+      refUserId=refUser.id;
+    }
+
+    // Verificar que el teléfono no exista
     const {data:ex}=await sb.from('users').select('id').eq('phone',ph).maybeSingle();
     if(ex)throw new Error('Ese teléfono ya está registrado');
+
+    // Crear cuenta en Supabase Auth
     const email=ph.replace(/\D/g,'')+('@cafeyield.mx');
     const {data:auth,error:ae}=await sb.auth.signUp({email,password:pw});
     if(ae)throw ae;
+
+    // Generar código único para este nuevo usuario
     const code=Math.random().toString(36).substr(2,6).toUpperCase();
-    const {error:ie}=await sb.from('users').insert({id:auth.user.id,name:name+' '+last,phone:ph,password_hash:'**',ref_code:code,ref_by:refUser.id});
+
+    // Insertar en tabla users
+    const {error:ie}=await sb.from('users').insert({
+      id:auth.user.id,
+      name:name+' '+last,
+      phone:ph,
+      password_hash:'**',
+      ref_code:code,
+      ref_by:refUserId   // null si usó CAFEYIELD, id real si usó código de usuario
+    });
     if(ie)throw ie;
+
     await loadAndEnter(auth.user.id);
-    toast('✅ ¡Cuenta creada! Bienvenido');
+    toast('✅ ¡Cuenta creada! Bienvenido a CaféYield ☕');
   }catch(e){load(false);toast('❌ '+(e.message||'Error al registrar'));}
 }
 
