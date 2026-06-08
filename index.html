@@ -81,14 +81,32 @@ body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--cream);mi
 .tb-gear:hover{background:rgba(200,118,42,.12);border-color:var(--caramel)}
 .tb-out{background:transparent;border:1px solid rgba(200,118,42,.3);border-radius:7px;padding:5px 10px;color:var(--latte);cursor:pointer;font-size:12px;transition:.2s}
 .tb-out:hover{border-color:var(--caramel);color:var(--caramel)}
-.scroll-area{flex:1;overflow-y:auto;padding-bottom:80px}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--dark);border-top:var(--bd);display:flex;align-items:stretch;height:72px;z-index:999;box-shadow:0 -4px 20px rgba(0,0,0,.5)}
+.scroll-area{flex:1;overflow-y:auto;padding-bottom:20px}
+.bottom-nav{display:none}
 .bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;background:transparent;border:none;color:var(--latte);font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;transition:.2s;padding:0;height:72px;min-width:0;touch-action:manipulation;position:relative;}
 .bn-item:hover{color:var(--cream);background:rgba(200,118,42,.06)}
 .bn-item.on{color:var(--gold);background:rgba(200,118,42,.1)}
 .bn-item .ico{font-size:22px;line-height:1}
 .bn-item .lbl{font-size:10px;font-weight:600}
 .bn-item.on .lbl{color:var(--gold)}
+/* SIDEBAR */
+.sidebar-toggle{background:transparent;border:none;color:var(--cream);font-size:26px;cursor:pointer;padding:6px;line-height:1;display:flex;align-items:center;touch-action:manipulation}
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:none;backdrop-filter:blur(3px)}
+.sidebar-overlay.on{display:block}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;background:var(--dark);border-right:var(--bd);z-index:101;transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:6px 0 32px rgba(0,0,0,.5)}
+.sidebar.on{transform:translateX(0)}
+.sb-head{padding:24px 20px 18px;border-bottom:var(--bd)}
+.sb-brand{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:900;color:var(--gold);line-height:1}
+.sb-user{font-size:12px;color:var(--latte);margin-top:4px}
+.sb-bal{display:inline-flex;align-items:center;gap:5px;background:rgba(200,118,42,.15);border:var(--bd);border-radius:8px;padding:5px 11px;color:var(--gold);font-weight:700;font-size:13px;margin-top:10px}
+.sb-nav{flex:1;padding:14px 10px;display:flex;flex-direction:column;gap:4px}
+.sb-item{display:flex;align-items:center;gap:14px;padding:13px 14px;border-radius:11px;cursor:pointer;transition:.18s;border:none;background:transparent;color:var(--latte);font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;width:100%;text-align:left;touch-action:manipulation}
+.sb-item:active{background:rgba(200,118,42,.15)}
+.sb-item.on{background:rgba(200,118,42,.12);color:var(--gold);font-weight:700}
+.sb-item .si{font-size:20px;width:28px;text-align:center;flex-shrink:0}
+.sb-foot{padding:14px 10px;border-top:var(--bd)}
+.sb-logout{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:11px;cursor:pointer;background:transparent;border:none;color:#e07060;font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;width:100%;touch-action:manipulation}
+.sb-logout:active{background:rgba(192,58,43,.1)}
 .page{display:none;padding:20px 18px}.page.on{display:block}
 .ph{margin-bottom:20px}
 .ph h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:900;color:var(--gold);line-height:1}
@@ -264,15 +282,35 @@ body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--cream);mi
 </div>
 </div>
 
-<!-- APP -->
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sb-head">
+    <div class="sb-brand">☕ CaféYield</div>
+    <div class="sb-user" id="sbUser">—</div>
+    <div class="sb-bal">MX$<span id="sbBal">0.00</span></div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-item on" id="sbn-inicio" onclick="goPage('inicio');closeSidebar()"><span class="si">🏡</span>Inicio</div>
+    <div class="sb-item" id="sbn-cafe" onclick="goPage('cafe');closeSidebar()"><span class="si">🫘</span>Café</div>
+    <div class="sb-item" id="sbn-referidos" onclick="goPage('referidos');closeSidebar()"><span class="si">🤝</span>Referidos</div>
+    <div class="sb-item" id="sbn-banco" onclick="goPage('banco');closeSidebar()"><span class="si">🏦</span>Banco</div>
+  </div>
+  <div class="sb-foot">
+    <div class="sb-item" onclick="openSettings();closeSidebar()"><span class="si">⚙️</span>Configuración</div>
+    <div class="sb-logout" onclick="doLogout()"><span class="si">🚪</span>Cerrar Sesión</div>
+  </div>
+</div>
+
 <div id="appScreen">
   <div class="topbar">
+    <button class="sidebar-toggle" onclick="openSidebar()">☰</button>
     <div class="tb-brand">☕ Café<span>Yield</span></div>
     <div class="tb-right">
-      <div class="tb-bal">$<span id="tbBal">0.00</span></div>
+      <div class="tb-bal">MX$<span id="tbBal">0.00</span></div>
       <span class="tb-user" id="tbUser">—</span>
       <button class="tb-gear" onclick="openSettings()">⚙️</button>
-      <button class="tb-out" onclick="doLogout()">Salir</button>
     </div>
   </div>
 
@@ -289,18 +327,18 @@ body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--cream);mi
         <div class="stat"><div class="v" id="hsRef">0</div><div class="l">Referidos</div></div>
         <div class="stat"><div class="v" id="hsEarn">$0</div><div class="l">Ganado</div></div>
       </div>
-      <div class="card"><h3>📦 Productos Activos</h3><div id="activeCards"><div class="empty">Ve a ☕ Café e invierte para empezar.</div></div></div>
+      <div class="card"><h3>📦 Productos Activos</h3><div id="activeCards"><div class="empty">Ve a 🫘 Café e invierte para empezar.</div></div></div>
     </div>
 
     <!-- CAFÉ -->
     <div class="page" id="page-cafe">
-      <div class="ph"><h2>☕ Café</h2><p>5 productos · 5% de rendimiento cobrable exactamente a las 24h</p></div>
+      <div class="ph"><h2>🫘 Café</h2><p>5 productos · 5% de rendimiento cobrable exactamente a las 24h</p></div>
       <div class="pgrid" id="prodGrid"><div class="empty">Cargando...</div></div>
     </div>
 
     <!-- REFERIDOS -->
     <div class="page" id="page-referidos">
-      <div class="ph"><h2>👥 Referidos</h2><p>Gana comisiones cuando tu red invierte</p></div>
+      <div class="ph"><h2>🤝 Referidos</h2><p>Gana comisiones cuando tu red invierte</p></div>
       <div class="card"><h3>🔗 Mi Enlace y QR</h3>
         <div class="ref-link-box">
           <div class="ref-link-row"><input class="ref-link-inp" id="refLinkInp" readonly><button class="btn-copy" onclick="copyLink()">Copiar</button></div>
@@ -339,7 +377,7 @@ body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--cream);mi
         <button class="btab" onclick="showBank('historial',this)">📋 Historial</button>
       </div>
       <div class="bpanel on" id="bp-saldo">
-        <div class="bal-hero"><div class="lbl">Saldo Disponible</div><div class="amt">$<span id="wBal">0.00</span></div><div class="sub">Rendimientos: <b id="wEarned">$0.00</b></div></div>
+        <div class="bal-hero"><div class="lbl">Saldo Disponible</div><div class="amt">MX$<span id="wBal">0.00</span></div><div class="sub">Rendimientos: <b id="wEarned">$0.00</b></div></div>
         <div class="stats-row"><div class="stat"><div class="v" id="wInv">$0</div><div class="l">Invertido</div></div><div class="stat"><div class="v" id="wRef">$0</div><div class="l">Com. Referidos</div></div></div>
       </div>
       <div class="bpanel" id="bp-depositar">
@@ -351,7 +389,7 @@ body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--cream);mi
           <div class="brow"><span class="k">Concepto</span><span class="v">Tu número de teléfono</span></div>
         </div>
         <div class="card" style="margin-bottom:0"><h3>📝 Registrar Depósito</h3>
-          <div class="fi"><label>Monto (USD)</label><input type="number" id="dAmt" placeholder="Ej. 500.00"></div>
+          <div class="fi"><label>Monto (MXN)</label><input type="number" id="dAmt" placeholder="Ej. 500.00"></div>
           <div class="fi"><label>Banco de Origen</label><select id="dBank"><option value="">Seleccionar...</option><option>BBVA México</option><option>Santander</option><option>Banamex / Citibanamex</option><option>Banorte</option><option>HSBC</option><option>Scotiabank</option><option>Otro</option></select></div>
           <div class="fi"><label>Nombre del Titular</label><input type="text" id="dName" placeholder="Nombre completo"></div>
           <div class="fi"><label>CLABE / Número de Cuenta</label><input type="text" id="dClabe" placeholder="18 dígitos CLABE"></div>
@@ -369,10 +407,10 @@ body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--cream);mi
             <div class="fi"><label>CLABE Interbancaria</label><input type="text" id="wClabe" placeholder="18 dígitos" maxlength="18"></div>
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:13px"><input type="checkbox" id="saveBank" style="accent-color:var(--caramel);width:16px;height:16px"><label for="saveBank" style="font-size:12px;color:var(--latte);cursor:pointer">Guardar cuenta para próximos retiros</label></div>
           </div>
-          <div class="bal-hero" style="padding:14px;margin-bottom:14px"><div class="lbl">Disponible</div><div class="amt" style="font-size:34px">$<span id="wAvail">0.00</span></div></div>
-          <div class="fi"><label>Monto (mín. $50 USD)</label><input type="number" id="wAmt" placeholder="50.00"></div>
+          <div class="bal-hero" style="padding:14px;margin-bottom:14px"><div class="lbl">Disponible</div><div class="amt" style="font-size:34px">MX$<span id="wAvail">0.00</span></div></div>
+          <div class="fi"><label>Monto (mín. MX$500)</label><input type="number" id="wAmt" placeholder="50.00"></div>
           <button class="btn btn-gold" onclick="doWithdraw()">💸 Solicitar Retiro</button>
-          <div class="info-note" style="margin-top:12px">⏰ Procesado en <b>24–48h hábiles</b>. Mínimo <b>$50 USD</b>.</div>
+          <div class="info-note" style="margin-top:12px">⏰ Procesado en <b>24–48h hábiles</b>. Mínimo <b>MX$500</b>.</div>
         </div>
       </div>
       <div class="bpanel" id="bp-historial">
@@ -381,13 +419,6 @@ body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--cream);mi
       </div>
     </div>
   </div>
-
-  <nav class="bottom-nav">
-    <div class="bn-item on" id="bn-inicio" ontouchstart="goPage('inicio')" onclick="goPage('inicio')"><span class="ico">🏠</span><span class="lbl">Inicio</span></div>
-    <div class="bn-item" id="bn-cafe" ontouchstart="goPage('cafe')" onclick="goPage('cafe')"><span class="ico">☕</span><span class="lbl">Café</span></div>
-    <div class="bn-item" id="bn-referidos" ontouchstart="goPage('referidos')" onclick="goPage('referidos')"><span class="ico">👥</span><span class="lbl">Referidos</span></div>
-    <div class="bn-item" id="bn-banco" ontouchstart="goPage('banco')" onclick="goPage('banco')"><span class="ico">🏦</span><span class="lbl">Banco</span></div>
-  </nav>
 </div>
 
 <!-- INVEST MODAL -->
@@ -395,7 +426,7 @@ body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--cream);mi
   <div class="modal">
     <button class="mx" onclick="closeM('mInvest')">✕</button>
     <h3>☕ <span id="mName" style="color:var(--latte)"></span></h3>
-    <div class="fi"><label>Monto a Invertir (USD)</label><input type="number" id="mAmt" placeholder="Mínimo..." oninput="calcEst()"></div>
+    <div class="fi"><label>Monto a Invertir (MXN)</label><input type="number" id="mAmt" placeholder="Mínimo..." oninput="calcEst()"></div>
     <div class="est-box">Con <b id="eAmt">$0</b> ganarás <b id="eYield">$0</b> a las 24h exactas</div>
     <p style="font-size:11px;color:var(--latte);line-height:1.5;margin-bottom:14px">El botón de cobro aparece exactamente <b style="color:var(--gold)">24 horas</b> después de tu compra.</p>
     <button class="btn btn-green" onclick="confirmInvest()">✅ Confirmar Inversión</button>
@@ -611,21 +642,23 @@ function renderStats(){
   const b=fm(CUR.balance);
   document.getElementById('tbBal').textContent=b;
   document.getElementById('tbUser').textContent=CUR.name.split(' ')[0];
+  document.getElementById('sbBal').textContent=b;
+  document.getElementById('sbUser').textContent=CUR.name;
   document.getElementById('heroName').textContent=CUR.name.split(' ')[0];
-  document.getElementById('hsBal').textContent='$'+b;
-  document.getElementById('hsInv').textContent='$'+fm(CUR.invested);
-  document.getElementById('hsEarn').textContent='$'+fm((CUR.earned||0)+(CUR.ref_earned||0));
+  document.getElementById('hsBal').textContent='MX$'+b;
+  document.getElementById('hsInv').textContent='MX$'+fm(CUR.invested);
+  document.getElementById('hsEarn').textContent='MX$'+fm((CUR.earned||0)+(CUR.ref_earned||0));
   document.getElementById('wBal').textContent=b;
   document.getElementById('wAvail').textContent=b;
-  document.getElementById('wEarned').textContent='$'+fm(CUR.earned||0);
-  document.getElementById('wInv').textContent='$'+fm(CUR.invested);
-  document.getElementById('wRef').textContent='$'+fm(CUR.ref_earned||0);
+  document.getElementById('wEarned').textContent='MX$'+fm(CUR.earned||0);
+  document.getElementById('wInv').textContent='MX$'+fm(CUR.invested);
+  document.getElementById('wRef').textContent='MX$'+fm(CUR.ref_earned||0);
 }
 
 /* ═══ ACTIVE CARDS ═══ */
 function renderActiveCards(){
   const c=document.getElementById('activeCards');if(!c)return;
-  if(!INVS.length){c.innerHTML='<div class="empty">Ve a ☕ Café e invierte para empezar.</div>';loadRefCounts();return;}
+  if(!INVS.length){c.innerHTML='<div class="empty">Ve a 🫘 Café e invierte para empezar.</div>';loadRefCounts();return;}
   c.innerHTML=INVS.map((p,i)=>{
     const prod=p.products||{};
     const colAt=new Date(p.collectable_at).getTime();
@@ -643,7 +676,7 @@ function renderActiveCards(){
       :ready
       ?`<button class="yield-btn yb-ready" onclick="collectYield('${p.id}',${i})">💰 Cobrar $${fm(y)}</button>`
       :`<button class="yield-btn yb-wait" disabled>Esperando...</button>`;
-    return`<div class="acard"><div class="acard-top"><div class="acard-icon">${prod.icon||'☕'}</div><div class="acard-info"><div class="acard-name">${prod.name||'Producto'}</div><div class="acard-sub">Invertido: <b style="color:var(--gold)">$${fm(p.amount)}</b> · Rendimiento: <b style="color:var(--glow)">$${fm(y)}</b></div></div></div>${timer}${btn}</div>`;
+    return`<div class="acard"><div class="acard-top"><div class="acard-icon">${prod.icon||'☕'}</div><div class="acard-info"><div class="acard-name">${prod.name||'Producto'}</div><div class="acard-sub">Invertido: <b style="color:var(--gold)">MX$${fm(p.amount)}</b> · Rendimiento: <b style="color:var(--glow)">MX$${fm(y)}</b></div></div></div>${timer}${btn}</div>`;
   }).join('');
   loadRefCounts();
 }
@@ -786,7 +819,7 @@ async function doDeposit(){
 }
 async function doWithdraw(){
   const amt=parseFloat(document.getElementById('wAmt').value);
-  if(!amt||amt<50){toast('⚠️ Mínimo $50 USD');return;}
+  if(!amt||amt<500){toast('⚠️ Mínimo MX$500');return;}
   if(amt>CUR.balance){toast('⚠️ Saldo insuficiente');return;}
   const useSaved=CUR.bank&&!document.getElementById('savedBankBox').classList.contains('hide');
   let bank,name,clabe;
@@ -899,12 +932,23 @@ async function saveBank(){
   toast('✅ Cuenta bancaria guardada');
 }
 
+/* ═══ SIDEBAR ═══ */
+function openSidebar(){
+  document.getElementById('sidebar').classList.add('on');
+  document.getElementById('sbOverlay').classList.add('on');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('on');
+  document.getElementById('sbOverlay').classList.remove('on');
+}
+
 /* ═══ NAV ═══ */
 function goPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('on'));
   document.getElementById('page-'+name).classList.add('on');
-  document.getElementById('bn-'+name).classList.add('on');
+  const sbn=document.getElementById('sbn-'+name);
+  if(sbn)sbn.classList.add('on');
   document.querySelector('.scroll-area').scrollTop=0;
   if(name==='referidos')renderRefSection();
   if(name==='banco')renderBancoSection();
