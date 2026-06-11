@@ -292,10 +292,10 @@ body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--cream);mi
     <div class="sb-bal">MX$<span id="sbBal">0.00</span></div>
   </div>
   <div class="sb-nav">
-    <div class="sb-item on" id="sbn-inicio" onclick="goPage('inicio');closeSidebar()"><span class="si">🏡</span>Inicio</div>
-    <div class="sb-item" id="sbn-cafe" onclick="goPage('cafe');closeSidebar()"><span class="si">🫘</span>Café</div>
-    <div class="sb-item" id="sbn-referidos" onclick="goPage('referidos');closeSidebar()"><span class="si">🤝</span>Referidos</div>
-    <div class="sb-item" id="sbn-banco" onclick="goPage('banco');closeSidebar()"><span class="si">🏦</span>Banco</div>
+    <div class="sb-item on" id="sbn-inicio" onclick="goPage('inicio');closeSidebar()"><span class="si"><img src="https://i.imgur.com/9wOiP9k.png" style="width:22px;height:22px;object-fit:contain;vertical-align:middle"></span>Inicio</div>
+    <div class="sb-item" id="sbn-cafe" onclick="goPage('cafe');closeSidebar()"><span class="si"><img src="https://i.imgur.com/wqxEsmC.png" style="width:22px;height:22px;object-fit:contain;vertical-align:middle"></span>Café</div>
+    <div class="sb-item" id="sbn-referidos" onclick="goPage('referidos');closeSidebar()"><span class="si"><img src="https://i.imgur.com/ZhcXhKM.png" style="width:22px;height:22px;object-fit:contain;vertical-align:middle"></span>Referidos</div>
+    <div class="sb-item" id="sbn-banco" onclick="goPage('banco');closeSidebar()"><span class="si"><img src="https://i.imgur.com/9wTfGmS.png" style="width:22px;height:22px;object-fit:contain;vertical-align:middle"></span>Banco</div>
   </div>
   <div class="sb-foot">
     <div class="sb-item" onclick="openSettings();closeSidebar()"><span class="si">⚙️</span>Configuración</div>
@@ -328,19 +328,19 @@ body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--cream);mi
         <div class="stat"><div class="v" id="hsRef">0</div><div class="l">Referidos</div></div>
         <div class="stat"><div class="v" id="hsEarn">$0</div><div class="l">Ganado</div></div>
       </div>
-      <div class="card"><h3>📦 Productos Activos</h3><div id="activeCards"><div class="empty">Ve a 🫘 Café e invierte para empezar.</div></div></div>
+      <div class="card"><h3><img src="https://i.imgur.com/9wOiP9k.png" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;margin-right:6px"> Productos Activos</h3><div id="activeCards"><div class="empty">Ve a 🫘 Café e invierte para empezar.</div></div></div>
     </div>
 
     <!-- CAFÉ -->
     <div class="page" id="page-cafe">
       <img src="https://i.imgur.com/05LrBMO.png" alt="CaféYield" style="width:100%;border-radius:14px;margin-bottom:14px;box-shadow:0 6px 24px rgba(0,0,0,.5);display:block;max-height:140px;object-fit:cover;object-position:center 40%">
-      <div class="ph"><h2>🫘 Café</h2><p>5 productos · 5% de rendimiento cobrable exactamente a las 24h</p></div>
+      <div class="ph"><h2><img src="https://i.imgur.com/wqxEsmC.png" style="width:28px;height:28px;object-fit:contain;vertical-align:middle;margin-right:6px"> Café</h2><p>5 productos · 5% de rendimiento cobrable exactamente a las 24h</p></div>
       <div class="pgrid" id="prodGrid"><div class="empty">Cargando...</div></div>
     </div>
 
     <!-- REFERIDOS -->
     <div class="page" id="page-referidos">
-      <div class="ph"><h2>🤝 Referidos</h2><p>Gana comisiones cuando tu red invierte</p></div>
+      <div class="ph"><h2><img src="https://i.imgur.com/ZhcXhKM.png" style="width:28px;height:28px;object-fit:contain;vertical-align:middle;margin-right:6px"> Referidos</h2><p>Gana comisiones cuando tu red invierte</p></div>
       <div class="card"><h3>🔗 Mi Enlace y QR</h3>
         <div class="ref-link-box">
           <div class="ref-link-row"><input class="ref-link-inp" id="refLinkInp" readonly><button class="btn-copy" onclick="copyLink()">Copiar</button></div>
@@ -371,7 +371,7 @@ body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--cream);mi
 
     <!-- BANCO -->
     <div class="page" id="page-banco">
-      <div class="ph"><h2>🏦 Banco</h2><p>Deposita, retira y consulta tu historial</p></div>
+      <div class="ph"><h2><img src="https://i.imgur.com/9wTfGmS.png" style="width:28px;height:28px;object-fit:contain;vertical-align:middle;margin-right:6px"> Banco</h2><p>Deposita, retira y consulta tu historial</p></div>
       <div class="bank-tabs">
         <button class="btab on" onclick="showBank('saldo',this)">💵 Saldo</button>
         <button class="btab" onclick="showBank('depositar',this)">⬆️ Depositar</button>
