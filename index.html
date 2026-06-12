@@ -320,7 +320,7 @@ body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--cream);mi
       <img src="https://i.imgur.com/05LrBMO.png" alt="CaféYield" style="width:100%;border-radius:14px;margin-bottom:14px;box-shadow:0 6px 24px rgba(0,0,0,.5);display:block;max-height:160px;object-fit:cover;object-position:center 35%">
       <div class="w-hero"><div class="w-hero-beans" id="heroBeans"></div>
         <h2>Hola, <span id="heroName" style="color:var(--latte)">Inversionista</span> ☕</h2>
-        <p>Tu rendimiento se cobra exactamente 24 horas después de cada compra · hora CDMX</p>
+        <p>Tu rendimiento se cobra todos los días a las 12:00 PM hora CDMX</p>
       </div>
       <div class="stats-row">
         <div class="stat"><div class="v" id="hsBal">$0</div><div class="l">Balance</div></div>
@@ -674,26 +674,31 @@ function renderActiveCards(){
   c.innerHTML=INVS.map((p,i)=>{
     const prod=p.products||{};
     const colAt=new Date(p.collectable_at).getTime();
-    const ready=!p.collected&&isYieldReady(p.collectable_at);
-    const done=p.collected;
-    const left=done?null:timeLeft(colAt);
+    // Con el nuevo SQL, collected siempre es false — el ciclo se reinicia solo
+    // Un producto está listo si collectable_at ya pasó
+    const ready=isYieldReady(p.collectable_at);
+    const left=timeLeft(colAt);
     const y=p.amount*(p.yield_pct/100);
-    const timer=done
-      ?`<div class="acard-timer" style="color:rgba(201,149,106,.4)">✅ Rendimiento cobrado</div>`
-      :ready
-      ?`<div class="acard-timer" style="border-color:rgba(93,160,110,.3);background:rgba(61,107,74,.1)">🟢 <b style="color:var(--glow)">¡Listo para cobrar!</b></div>`
-      :`<div class="acard-timer">⏳ Disponible en <b style="color:var(--gold);font-size:16px">${left}</b></div>`;
-    const btn=done
-      ?`<button class="yield-btn yb-done" disabled>Cobrado ✓</button>`
-      :ready
-      ?`<button class="yield-btn yb-ready" onclick="collectYield('${p.id}',${i})">💰 Cobrar $${fm(y)}</button>`
-      :`<button class="yield-btn yb-wait" disabled>Esperando...</button>`;
+    const cycles=p.cycles_collected||0;
+    const totalEarned=y*cycles;
+    const timer=ready
+      ?`<div class="acard-timer" style="border-color:rgba(93,160,110,.3);background:rgba(61,107,74,.1)">🟢 <b style="color:var(--glow)">¡Listo para cobrar!</b> · Próximo cobro mañana a las 12:00 PM CDMX</div>`
+      :`<div class="acard-timer">⏳ Próximo cobro en <b style="color:var(--gold);font-size:15px">${left}</b> · 12:00 PM CDMX</div>`;
+    const btn=ready
+      ?`<button class="yield-btn yb-ready" onclick="collectYield('${p.id}',${i})">💰 Cobrar MX$${fm(y)}</button>`
+      :`<button class="yield-btn yb-wait" disabled>Esperando próximo ciclo...</button>`;
     const aImg=PROD_IMGS[p.product_id]||null;
     return`<div class="acard"><div class="acard-top">
       ${aImg
-        ?`<img src="${aImg}" style="width:48px;height:48px;border-radius:10px;object-fit:cover;flex-shrink:0">`
+        ?`<img src="${aImg}" style="width:52px;height:52px;border-radius:10px;object-fit:cover;flex-shrink:0">`
         :`<div class="acard-icon">${prod.icon||'☕'}</div>`}
-      <div class="acard-info"><div class="acard-name">${prod.name||'Producto'}</div><div class="acard-sub">Invertido: <b style="color:var(--gold)">MX$${fm(p.amount)}</b> · Rendimiento: <b style="color:var(--glow)">MX$${fm(y)}</b></div></div></div>${timer}${btn}</div>`;
+      <div class="acard-info">
+        <div class="acard-name">${prod.name||'Producto'}</div>
+        <div class="acard-sub">Invertido: <b style="color:var(--gold)">MX$${fm(p.amount)}</b> · Rend. diario: <b style="color:var(--glow)">MX$${fm(y)}</b></div>
+        ${cycles>0?`<div style="font-size:11px;color:var(--latte);margin-top:2px">Total cobrado: <b style="color:var(--glow)">MX$${fm(totalEarned)}</b> (${cycles} día${cycles===1?'':'s'})</div>`:''}
+      </div></div>
+      ${timer}${btn}
+    </div>`;
   }).join('');
   loadRefCounts();
 }
@@ -703,10 +708,15 @@ async function collectYield(id,idx){
   try{
     const {data,error}=await sb.rpc('collect_yield',{p_user_id:CUR.id,p_investment_id:id});
     if(error)throw error;
-    INVS[idx].collected=true;
+    // Reload investments from DB so collectable_at is updated to next cycle
+    const {data:invs}=await sb.from('investments')
+      .select('*,products(name,icon,color)')
+      .eq('user_id',CUR.id)
+      .order('bought_at',{ascending:false});
+    INVS=invs||[];
     const {data:u}=await sb.from('users').select('*').eq('id',CUR.id).single();
     CUR=u;load(false);renderAll();
-    toast(`💰 ¡$${fm(data)} cobrados!`);
+    toast(`💰 ¡MX$${fm(data)} cobrados! Próximo rendimiento mañana a las 12:00 PM CDMX`);
   }catch(e){load(false);toast('❌ '+(e.message||'Error'));}
 }
 
