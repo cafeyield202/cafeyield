@@ -383,30 +383,21 @@ body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--cream);mi
         <div class="stats-row"><div class="stat"><div class="v" id="wInv">$0</div><div class="l">Invertido</div></div><div class="stat"><div class="v" id="wRef">$0</div><div class="l">Com. Referidos</div></div></div>
       </div>
       <div class="bpanel" id="bp-depositar">
-        <div class="card" style="margin-bottom:14px">
-          <h3>⬆️ Depositar Saldo</h3>
-          <p style="font-size:12px;color:var(--latte);margin-bottom:16px;line-height:1.6">Ingresa el monto y te generaremos una <b style="color:var(--gold)">CLABE única</b> para transferir desde cualquier banco vía SPEI. El saldo se acredita automáticamente.</p>
-          <div class="fi"><label>Monto a Depositar (MXN)</label><input type="number" id="dAmt" placeholder="Ej. 500.00" min="50"></div>
-          <button class="btn btn-green" onclick="doDeposit()">🏦 Generar CLABE de Pago</button>
+        <div class="dest-info"><h4>📨 Deposita a esta cuenta CaféYield</h4>
+          <div class="brow"><span class="k">Banco</span><span class="v">Banorte</span></div>
+          <div class="brow"><span class="k">Beneficiario</span><span class="v">CaféYield S.A. de C.V.</span></div>
+          <div class="brow"><span class="k">CLABE</span><span class="v" style="font-family:monospace;font-size:11px">072691004567891234</span></div>
+          <div class="brow"><span class="k">Cuenta</span><span class="v" style="font-family:monospace">1045678912</span></div>
+          <div class="brow"><span class="k">Concepto</span><span class="v">Tu número de teléfono</span></div>
         </div>
-        <!-- Resultado TopPay -->
-        <div id="depositResult" style="display:none">
-          <div style="background:linear-gradient(135deg,#1a3d20,#0d1f10);border:1px solid rgba(93,160,110,.35);border-radius:14px;padding:20px;text-align:center">
-            <div style="font-size:13px;color:var(--glow);font-weight:700;margin-bottom:4px">✅ ¡CLABE generada!</div>
-            <div style="font-size:11px;color:var(--latte);margin-bottom:16px">Transfiere exactamente el monto indicado a esta CLABE vía SPEI</div>
-            <div style="font-size:11px;color:var(--latte);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px">CLABE Interbancaria</div>
-            <div id="depositClabe" style="font-family:monospace;font-size:22px;font-weight:700;color:var(--gold);letter-spacing:2px;margin-bottom:12px">—</div>
-            <button onclick="copyClabe()" style="background:rgba(200,118,42,.2);border:1px solid rgba(200,118,42,.4);border-radius:8px;padding:8px 18px;color:var(--gold);font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:16px">📋 Copiar CLABE</button>
-            <div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid rgba(93,160,110,.2);font-size:12px">
-              <span style="color:var(--latte)">Banco</span><span id="depositBank" style="color:var(--cream);font-weight:600">—</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid rgba(93,160,110,.2);font-size:12px">
-              <span style="color:var(--latte)">Monto exacto</span><span id="depositAmt" style="color:var(--glow);font-weight:700">—</span>
-            </div>
-            <div style="background:rgba(232,169,60,.08);border:1px solid rgba(232,169,60,.2);border-radius:9px;padding:10px;margin-top:12px;font-size:11px;color:var(--latte);line-height:1.6">
-              ⚠️ Transfiere el monto <b style="color:var(--cream)">exacto</b>. El saldo se acredita automáticamente en minutos después de tu transferencia.
-            </div>
-          </div>
+        <div class="card" style="margin-bottom:0"><h3>📝 Registrar Depósito</h3>
+          <div class="fi"><label>Monto (MXN)</label><input type="number" id="dAmt" placeholder="Ej. 500.00"></div>
+          <div class="fi"><label>Banco de Origen</label><select id="dBank"><option value="">Seleccionar...</option><option>BBVA México</option><option>Santander</option><option>Banamex / Citibanamex</option><option>Banorte</option><option>HSBC</option><option>Scotiabank</option><option>Otro</option></select></div>
+          <div class="fi"><label>Nombre del Titular</label><input type="text" id="dName" placeholder="Nombre completo"></div>
+          <div class="fi"><label>CLABE / Número de Cuenta</label><input type="text" id="dClabe" placeholder="18 dígitos CLABE"></div>
+          <div class="fi"><label>Folio / Referencia</label><input type="text" id="dFolio" placeholder="Número de folio"></div>
+          <button class="btn btn-green" onclick="doDeposit()">✅ Confirmar Depósito</button>
+          <div class="info-note">⚠️ Registra el folio después de transferir. Acreditado en <b>máx. 30 min</b> días hábiles.</div>
         </div>
       </div>
       <div class="bpanel" id="bp-retirar">
@@ -854,30 +845,20 @@ async function renderBancoSection(){
 }
 async function doDeposit(){
   const amt=parseFloat(document.getElementById('dAmt').value);
-  if(!amt||amt<50){toast('⚠️ Monto mínimo $50');return;}
+  const bank=document.getElementById('dBank').value;
+  const name=document.getElementById('dName').value.trim();
+  const clabe=document.getElementById('dClabe').value.trim();
+  const folio=document.getElementById('dFolio').value.trim();
+  if(!amt||!bank||!name||!clabe||!folio){toast('⚠️ Completa todos los campos');return;}
   load(true);
   try{
-    const res=await fetch('https://limon-persa-backend-production.up.railway.app/cy/create-payin',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({userId:CUR.id,amount:amt,userName:CUR.name})
-    });
-    const data=await res.json();
-    if(!data.ok)throw new Error(data.error||'Error al generar CLABE');
-    // Mostrar resultado
-    document.getElementById('depositClabe').textContent=data.clabe||'Ver app banco';
-    document.getElementById('depositBank').textContent=data.bankName||'STP';
-    document.getElementById('depositAmt').textContent='$'+fm(amt)+' MXN';
-    document.getElementById('depositResult').style.display='block';
-    document.getElementById('dAmt').value='';
-    load(false);
-    toast('✅ CLABE generada. Transfiere exactamente $'+fm(amt));
-  }catch(e){load(false);toast('❌ '+(e.message||'Error al generar CLABE'));}
-}
-function copyClabe(){
-  const clabe=document.getElementById('depositClabe').textContent;
-  navigator.clipboard.writeText(clabe).catch(()=>{});
-  toast('📋 CLABE copiada');
+    const {error}=await sb.rpc('request_deposit',{p_user_id:CUR.id,p_amount:amt,p_bank_name:bank,p_holder:name,p_clabe:clabe,p_folio:folio});
+    if(error)throw error;
+    ['dAmt','dName','dClabe','dFolio'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('dBank').value='';
+    await renderDepList();load(false);
+    toast('✅ Depósito registrado. Se acreditará en máx. 30 min.');
+  }catch(e){load(false);toast('❌ '+(e.message||'Error'));}
 }
 async function doWithdraw(){
   // Check CDMX withdrawal window 11am–6pm
