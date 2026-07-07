@@ -235,6 +235,9 @@ body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--cream);mi
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--dark);border:var(--bd);border-radius:11px;padding:11px 20px;color:var(--cream);font-size:13px;box-shadow:0 8px 30px var(--shadow);opacity:0;transition:.3s cubic-bezier(.34,1.56,.64,1);z-index:999;white-space:nowrap;max-width:90vw}
 .toast.on{transform:translateX(-50%) translateY(0);opacity:1}
 .empty{text-align:center;padding:24px 16px;color:var(--latte);font-size:13px;line-height:1.6}
+.fab-support{position:fixed;bottom:24px;right:20px;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#2AABEE,#1a8fd1);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(42,171,238,.5);z-index:150;transition:.2s;text-decoration:none}
+.fab-support:hover{transform:scale(1.1);box-shadow:0 6px 24px rgba(42,171,238,.6)}
+.fab-support svg{width:26px;height:26px;fill:#fff}
 @media(min-width:600px){.pgrid{grid-template-columns:repeat(3,1fr)}.page{padding:24px}.overlay{align-items:center;padding:20px}.modal{border-radius:22px;max-width:420px}}
 </style>
 </head>
@@ -478,6 +481,13 @@ body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--cream);mi
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- Botón flotante de soporte Telegram -->
+<a href="https://t.me/+1fCdq0M3iaFhNzNh" target="_blank" class="fab-support" title="Soporte">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.178 13.5l-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.97.059z"/>
+  </svg>
+</a>
 
 <script>
 /* ═══ STATE ═══ */
